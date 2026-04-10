@@ -14,7 +14,7 @@ st.title("📊 Product Analytics Dashboard")
 # -----------------------------
 # Load Dataset (SAFE METHOD)
 # -----------------------------
-file_path = os.path.join('data', 'ecommerce_data.csv')
+file_path = os.path.join('data', 'cleaned_data.csv')
 
 # Debug (optional)
 # st.write(os.listdir())
