@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-import os
 
 # -----------------------------
 # Page Config
@@ -11,35 +10,9 @@ st.set_page_config(page_title="Product Analytics Dashboard", layout="wide")
 st.title("📊 Product Analytics Dashboard")
 
 # -----------------------------
-# DEBUG SECTION (VERY IMPORTANT)
+# Load Dataset (FINAL FIX)
 # -----------------------------
-st.subheader("🔍 Debug Info")
-
-root_files = os.listdir()
-st.write("ROOT FILES:", root_files)
-
-if os.path.exists('data'):
-    data_files = os.listdir('data')
-    st.write("DATA FOLDER FILES:", data_files)
-else:
-    st.error("❌ 'data' folder NOT FOUND")
-
-# -----------------------------
-# AUTO DETECT CSV FILE (NO ERROR)
-# -----------------------------
-df = None
-
-if os.path.exists('data'):
-    for file in os.listdir('data'):
-        if file.endswith('.csv'):
-            file_path = os.path.join('data', file)
-            st.success(f"✅ Using file: {file}")
-            df = pd.read_csv(file_path)
-            break
-
-if df is None:
-    st.error("❌ No CSV file found in data folder")
-    st.stop()
+df = pd.read_csv('cleaned_data.csv')
 
 # -----------------------------
 # Sidebar Filters
@@ -104,21 +77,40 @@ rev = filtered_df.groupby('Membership Type')['Total Spend'].sum()
 
 fig1, ax1 = plt.subplots()
 sns.barplot(x=rev.index, y=rev.values, ax=ax1)
+ax1.set_title("Revenue by Membership")
 st.pyplot(fig1)
+
+# -----------------------------
+# Customer Segmentation
+# -----------------------------
+st.subheader("👥 Customer Segmentation")
+
+if 'Customer Type' not in filtered_df.columns:
+    filtered_df['Customer Type'] = filtered_df['Days Since Last Purchase'].apply(lambda x:
+        'Active' if x <= 20 else
+        'Regular' if x <= 40 else
+        'Inactive'
+    )
+
+fig2, ax2 = plt.subplots()
+sns.countplot(x='Customer Type', data=filtered_df, ax=ax2)
+ax2.set_title("Customer Segmentation")
+st.pyplot(fig2)
 
 # -----------------------------
 # Satisfaction vs Spending
 # -----------------------------
 st.subheader("😊 Satisfaction vs Spending")
 
-fig2, ax2 = plt.subplots()
-sns.boxplot(x='Satisfaction Level', y='Total Spend', data=filtered_df, ax=ax2)
-st.pyplot(fig2)
+fig3, ax3 = plt.subplots()
+sns.boxplot(x='Satisfaction Level', y='Total Spend', data=filtered_df, ax=ax3)
+ax3.set_title("Satisfaction vs Spending")
+st.pyplot(fig3)
 
 # -----------------------------
 # Top Customers
 # -----------------------------
-st.subheader("🏆 Top Customers")
+st.subheader("🏆 Top 10 Customers")
 
 top_customers = filtered_df.sort_values(by='Total Spend', ascending=False).head(10)
 st.dataframe(top_customers)
