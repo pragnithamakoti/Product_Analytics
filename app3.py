@@ -10,7 +10,7 @@ st.set_page_config(page_title="Advanced Product Analytics Dashboard", layout="wi
 st.title("🚀 Advanced Product Analytics Dashboard")
 
 # Load data
-df = pd.read_csv('../data/ecommerce_data.csv')
+df = pd.read_csv('data/ecommerce_data.csv')
 
 # -----------------------
 # Sidebar Filters
